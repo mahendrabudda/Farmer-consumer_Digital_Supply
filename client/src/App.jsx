@@ -14,6 +14,9 @@ import Intro from './pages/intro'
 import Navbar from './components/farmer/FarmerNavbar'
 import FarmerHeader from './components/farmer/farmerHeader'
 import FarmerDashboard from './components/farmer/farmerDashboard'
+import FarmerOrders from './components/farmer/farmerOrder'
+import FarmerAnalytics from './components/farmer/farmerAnalytics'
+import FarmerProducts from './components/farmer/farmerProducts'
 
 const PrivateRoute = ({ children, requiredRole }) => {
   const { isLoggedin, userData } = useContext(AppContent)
@@ -49,6 +52,9 @@ const App = () => {
         <Route path='/farmerNavbar'       element={<Navbar />} />
         <Route path='/farmerHeader'    element={ <FarmerHeader/>}/>
         <Route path='/farmerDashboard' element={ <FarmerDashboard/>}/>
+        <Route path='/farmerOrder'     element={< FarmerOrders />}/>
+        <Route path='/farmerAnalytics' element={<FarmerAnalytics />}/>
+        <Route path='/farmerProduct'   element={<FarmerProducts />}/>
       </Routes>
     </BrowserRouter>
   )

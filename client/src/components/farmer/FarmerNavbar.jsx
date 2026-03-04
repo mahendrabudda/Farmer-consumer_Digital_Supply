@@ -31,9 +31,9 @@ const FarmerNavbar = () => {
 
   const navItems = [
     { name: "Dashboard", path: "/farmerdashboard", icon: "📊" },
-    { name: "My Products", path: "/farmer-products", icon: "🧺" },
-    { name: "Orders", path: "/farmer-orders", icon: "📦" },
-    { name: "Analytics", path: "/farmer-analytics", icon: "📈" },
+    { name: "My Products", path: "/farmerProduct", icon: "🧺" },
+    { name: "Orders", path: "/farmerOrder", icon: "📦" },
+    { name: "Analytics", path: "/farmerAnalytics", icon: "📈" },
   ];
 
   const cropTools = [
