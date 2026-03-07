@@ -10,16 +10,17 @@ import userRouter from './router/userRoute.js';
 const app = express();
 
 // 1. Define your Frontend Origin
-const allowedOrigins = ['http://localhost:5173' ,
-  'https://farmer-consumer-digital-supply.vercel.app/'
-]; 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://farmer-consumer-digital-supply.vercel.app"
+];
 
-// 2. Configure CORS with Credentials support
 app.use(cors({
   origin: allowedOrigins,
-  credentials: true
+  credentials: true,
+  methods: ["GET","POST","PUT","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization"]
 }));
-
 // Middleware
 app.use(express.json());
 app.use(cookieParser()); // 👈 Essential for your verify/login routes to read tokens
