@@ -2,53 +2,76 @@ import { useContext, useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AppContent } from '../Context/AppContext.jsx'
 import { toast } from 'react-toastify'
-
-const CROP_OPTIONS = [
-  'Rice', 'Wheat', 'Corn', 'Sugarcane', 'Cotton',
-  'Tomato', 'Onion', 'Potato', 'Chilli', 'Mango',
-  'Banana', 'Groundnut', 'Soybean', 'Sunflower', 'Other'
-]
+import axios from 'axios' // 1. Import Axios
 
 const Register = () => {
   const navigate = useNavigate()
-  const { setIsLoggedin, setUserData } = useContext(AppContent)
+  // 2. Extract necessary functions and variables from Context
+  const { setIsLoggedin, setUserData, backendUrl, getUserData } = useContext(AppContent) 
+  
   const [isLoaded, setIsLoaded] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [role, setRole] = useState('consumer')
+  const [role, setRole] = useState(null)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [phone, setPhone] = useState('')
   const [location, setLocation] = useState('')
-  const [selectedCrops, setSelectedCrops] = useState([])
 
   useEffect(() => {
     setTimeout(() => setIsLoaded(true), 100)
   }, [])
 
-  const toggleCrop = (crop) => {
-    setSelectedCrops(prev =>
-      prev.includes(crop) ? prev.filter(c => c !== crop) : [...prev, crop]
-    )
-  }
-
-  const onSubmit = (e) => {
+  // 3. Refactored onSubmit for real API calls
+  const onSubmit = async (e) => {
     e.preventDefault()
-    if (role === 'farmer' && selectedCrops.length === 0) {
-      toast.error('Please select at least one crop')
+    
+    if (!role) {
+      toast.error('Please select your role — Farmer or Consumer')
       return
     }
+
     setLoading(true)
-    setTimeout(() => {
-      setLoading(false)
-      const mockUser = { name, email, phone, location, role, crops: selectedCrops }
-      setIsLoggedin(true)
-      setUserData(mockUser)
-      toast.success('Account created successfully!')
-      navigate(role === 'farmer' ? '/farmerdashboard' : '/consumerdashboard')
-    }, 1000)
+    
+    // Ensure axios sends cookies so the JWT is stored immediately
+    axios.defaults.withCredentials = true;
+
+    try {
+      // 4. Match keys with your backend controller: 
+      // { fullName, email, password, phoneNumber, address, role }
+      const { data } = await axios.post(backendUrl + '/api/auth/register', {
+        fullName: name,
+        email,
+        password,
+        phoneNumber: phone,
+        address: location,
+        role: role
+      });
+
+      if (data.success) {
+        setIsLoggedin(true);
+        // 5. Fetch fresh user data into global state
+        await getUserData();
+        
+        toast.success('Account created! Welcome to MaMholi.');
+        
+        // 6. Navigate based on the selected role
+        navigate(role === 'farmer' ? '/farmerdashboard' : '/consumerdashboard');
+      } else {
+        toast.error(data.message || 'Registration failed');
+      }
+    } catch (error) {
+      // 7. Dynamic error handling for network or server issues
+      toast.error(error.response?.data?.message || error.message, {
+        position: 'top-center',
+        theme: 'dark'
+      });
+    } finally {
+      setLoading(false);
+    }
   }
 
+  // --- UI STYLING REMAINS UNCHANGED ---
   const inputStyle = {
     width: '100%', padding: '13px 20px',
     borderRadius: '14px',
@@ -143,27 +166,78 @@ const Register = () => {
             </p>
           </div>
 
-          {/* Role Toggle */}
-          <div style={{
-            display: 'flex', borderRadius: '16px', overflow: 'hidden',
-            border: '1px solid rgba(255,255,255,0.08)', marginBottom: '20px'
-          }}>
-            {['consumer', 'farmer'].map(r => (
-              <button
-                key={r} type="button" onClick={() => setRole(r)}
-                style={{
-                  flex: 1, padding: '12px',
-                  background: role === r ? 'linear-gradient(135deg, #4ade80, #22c55e)' : 'transparent',
-                  border: 'none', color: role === r ? 'black' : 'rgba(255,255,255,0.4)',
-                  fontSize: '0.78rem', fontWeight: 900, letterSpacing: '2px',
-                  textTransform: 'uppercase', cursor: 'pointer',
-                  transition: 'all 0.3s ease',
-                  boxShadow: role === r ? '0 0 20px rgba(74,222,128,0.2)' : 'none'
-                }}
-              >
-                {r === 'consumer' ? '🛒 Consumer' : '🌾 Farmer'}
+          {/* ── Role Selection Cards ── */}
+          <div style={{ marginBottom: '20px' }}>
+            <p style={{
+              fontSize: '0.68rem', color: 'rgba(255,255,255,0.25)',
+              fontWeight: 700, letterSpacing: '2px',
+              textTransform: 'uppercase', marginBottom: '12px', textAlign: 'center'
+            }}>
+              I am a...
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px' }}>
+
+              {/* Farmer Card */}
+              <button type="button" onClick={() => setRole('farmer')} style={{
+                padding: '20px 16px', borderRadius: '18px', cursor: 'pointer',
+                background: role === 'farmer' ? 'rgba(74,222,128,0.08)' : 'rgba(255,255,255,0.02)',
+                border: role === 'farmer' ? '1.5px solid rgba(74,222,128,0.5)' : '1.5px solid rgba(255,255,255,0.07)',
+                boxShadow: role === 'farmer' ? '0 0 24px rgba(74,222,128,0.12)' : 'none',
+                transition: 'all 0.3s ease', display: 'flex', flexDirection: 'column',
+                alignItems: 'center', gap: '10px'
+              }}>
+                <span style={{ fontSize: '2.2rem' }}>🌾</span>
+                <div>
+                  <div style={{
+                    color: role === 'farmer' ? '#4ade80' : 'rgba(255,255,255,0.7)',
+                    fontSize: '0.88rem', fontWeight: 800, letterSpacing: '1px'
+                  }}>Farmer</div>
+                  <div style={{
+                    color: 'rgba(255,255,255,0.25)', fontSize: '0.68rem',
+                    marginTop: '4px', lineHeight: 1.4
+                  }}>Sell your produce directly</div>
+                </div>
+                {role === 'farmer' && (
+                  <div style={{
+                    width: '20px', height: '20px', borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #4ade80, #22c55e)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.65rem', color: 'black', fontWeight: 900
+                  }}>✓</div>
+                )}
               </button>
-            ))}
+
+              {/* Consumer Card */}
+              <button type="button" onClick={() => setRole('consumer')} style={{
+                padding: '20px 16px', borderRadius: '18px', cursor: 'pointer',
+                background: role === 'consumer' ? 'rgba(74,222,128,0.08)' : 'rgba(255,255,255,0.02)',
+                border: role === 'consumer' ? '1.5px solid rgba(74,222,128,0.5)' : '1.5px solid rgba(255,255,255,0.07)',
+                boxShadow: role === 'consumer' ? '0 0 24px rgba(74,222,128,0.12)' : 'none',
+                transition: 'all 0.3s ease', display: 'flex', flexDirection: 'column',
+                alignItems: 'center', gap: '10px'
+              }}>
+                <span style={{ fontSize: '2.2rem' }}>🛒</span>
+                <div>
+                  <div style={{
+                    color: role === 'consumer' ? '#4ade80' : 'rgba(255,255,255,0.7)',
+                    fontSize: '0.88rem', fontWeight: 800, letterSpacing: '1px'
+                  }}>Consumer</div>
+                  <div style={{
+                    color: 'rgba(255,255,255,0.25)', fontSize: '0.68rem',
+                    marginTop: '4px', lineHeight: 1.4
+                  }}>Buy fresh from farms</div>
+                </div>
+                {role === 'consumer' && (
+                  <div style={{
+                    width: '20px', height: '20px', borderRadius: '50%',
+                    background: 'linear-gradient(135deg, #4ade80, #22c55e)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: '0.65rem', color: 'black', fontWeight: 900
+                  }}>✓</div>
+                )}
+              </button>
+
+            </div>
           </div>
 
           {/* Form */}
@@ -199,32 +273,6 @@ const Register = () => {
               onFocus={e => e.target.style.border = '1px solid rgba(74,222,128,0.5)'}
               onBlur={e => e.target.style.border = '1px solid rgba(255,255,255,0.1)'}
             />
-
-            {/* Crops */}
-            {role === 'farmer' && (
-              <div>
-                <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)', fontWeight: 700, letterSpacing: '2px', textTransform: 'uppercase', marginBottom: '10px' }}>
-                  Select Your Crops
-                </p>
-                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '8px' }}>
-                  {CROP_OPTIONS.map(crop => (
-                    <button
-                      key={crop} type="button" onClick={() => toggleCrop(crop)}
-                      style={{
-                        padding: '6px 14px', borderRadius: '10px', fontSize: '0.75rem', fontWeight: 600,
-                        cursor: 'pointer', transition: 'all 0.2s ease',
-                        background: selectedCrops.includes(crop) ? 'rgba(74,222,128,0.2)' : 'rgba(255,255,255,0.04)',
-                        border: selectedCrops.includes(crop) ? '1px solid rgba(74,222,128,0.5)' : '1px solid rgba(255,255,255,0.08)',
-                        color: selectedCrops.includes(crop) ? '#4ade80' : 'rgba(255,255,255,0.4)',
-                        boxShadow: selectedCrops.includes(crop) ? '0 0 10px rgba(74,222,128,0.15)' : 'none'
-                      }}
-                    >
-                      {crop}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
 
             <button
               type="submit" disabled={loading}
@@ -272,4 +320,4 @@ const Register = () => {
   )
 }
 
-export default Register
+export default Register;

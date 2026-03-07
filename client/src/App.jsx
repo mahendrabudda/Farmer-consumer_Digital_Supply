@@ -17,6 +17,8 @@ import FarmerDashboard from './components/farmer/farmerDashboard'
 import FarmerOrders from './components/farmer/farmerOrder'
 import FarmerAnalytics from './components/farmer/farmerAnalytics'
 import FarmerProducts from './components/farmer/farmerProducts'
+import ResetPassword from './pages/ResetPass'
+import CheckRegisterMail from './pages/CheckRegisterMail'
 
 const PrivateRoute = ({ children, requiredRole }) => {
   const { isLoggedin, userData } = useContext(AppContent)
@@ -48,6 +50,8 @@ const App = () => {
         <Route path='/'             element={<Intro />} />
         <Route path='/login'        element={<Login />} />
         <Route path='/register'     element={<Register />} />
+        <Route path='/reset-password' element={<ResetPassword />} />
+        <Route path='/CheckregisterMail' element={<CheckRegisterMail/>} />
         <Route path='/email-verify' element={<EmailVerify />} />
         <Route path='/farmerNavbar'       element={<Navbar />} />
         <Route path='/farmerHeader'    element={ <FarmerHeader/>}/>

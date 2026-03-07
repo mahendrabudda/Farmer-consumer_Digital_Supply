@@ -4,13 +4,12 @@ import { AppContent } from '../Context/AppContext.jsx'
 import { toast } from 'react-toastify'
 import axios from 'axios'
 
-const Login = () => {
+const CheckRegisterMail = () => {
   const navigate = useNavigate()
-  const { backendUrl, setIsLoggedin, setUserData, getUserData } = useContext(AppContent)
+  const { backendUrl } = useContext(AppContent)
   const [isLoaded, setIsLoaded] = useState(false)
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
 
   useEffect(() => {
     setTimeout(() => setIsLoaded(true), 100)
@@ -19,37 +18,18 @@ const Login = () => {
   const onSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
-
     try {
       axios.defaults.withCredentials = true
-
-      const { data } = await axios.post(backendUrl + '/api/auth/login', { email, password })
-
-      if (!data.success) {
-        toast.error(data.message, { position: 'top-center', theme: 'dark' })
-        return
-      }
-
-      // role comes directly from backend
-      setIsLoggedin(true)
-      await getUserData() // fills full userData in context
-
-      toast.success(`Welcome back, ${data.name}!`, {
-        position: 'top-center', theme: 'dark'
-      })
-
-      // navigate by role from login response
-      if (data.role === 'farmer') {
-        navigate('/farmerdashboard')
+      const { data } = await axios.post(backendUrl + '/api/auth/send-reset-otp', { email })
+      if (data.success) {
+        toast.success(data.message, { position: 'top-center', theme: 'dark' })
+        // pass email to next page via state
+        navigate('/reset-password', { state: { email } })
       } else {
-        navigate('/consumerdashboard')
+        toast.error(data.message, { position: 'top-center', theme: 'dark' })
       }
-
     } catch (err) {
-      toast.error(
-        err.response?.data?.message || 'Something went wrong. Try again.',
-        { position: 'top-center', theme: 'dark' }
-      )
+      toast.error(err.response?.data?.message || 'Something went wrong', { position: 'top-center', theme: 'dark' })
     } finally {
       setLoading(false)
     }
@@ -94,15 +74,13 @@ const Login = () => {
         </span>
       </div>
 
-      {/* ── Register Link ── */}
-      <div style={{
+      {/* ── Back to Login ── */}
+      <div onClick={() => navigate('/login')} style={{
         position: 'absolute', top: '8%', right: '8%', zIndex: 20,
-        opacity: isLoaded ? 1 : 0, transition: 'opacity 1s ease 0.5s'
+        cursor: 'pointer', opacity: isLoaded ? 1 : 0, transition: 'opacity 1s ease 0.5s'
       }}>
-        <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>No account? </span>
-        <span onClick={() => navigate('/register')}
-          style={{ color: '#4ade80', fontSize: '0.8rem', fontWeight: 700, cursor: 'pointer', letterSpacing: '1px' }}>
-          REGISTER →
+        <span style={{ color: '#4ade80', fontSize: '0.8rem', fontWeight: 700, letterSpacing: '1px' }}>
+          ← BACK TO LOGIN
         </span>
       </div>
 
@@ -129,62 +107,44 @@ const Login = () => {
               width: '60px', height: '60px', borderRadius: '18px',
               background: 'rgba(74,222,128,0.1)', border: '1px solid rgba(74,222,128,0.2)',
               fontSize: '1.8rem', marginBottom: '16px'
-            }}>👋</div>
+            }}>📧</div>
             <h2 style={{ color: 'white', fontSize: '2rem', fontWeight: 900, margin: 0, letterSpacing: '-0.5px' }}>
-              Welcome Back
+              Forgot Password?
             </h2>
-            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginTop: '8px', fontWeight: 300 }}>
-              Access your farm-fresh dashboard.
+            <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginTop: '8px', fontWeight: 300, lineHeight: 1.6 }}>
+              Enter your registered email.<br />We'll send you a reset OTP.
             </p>
           </div>
 
           {/* Form */}
           <form onSubmit={onSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <input type="email" placeholder="Email Address" required
+            <input type="email" placeholder="Registered Email Address" required
               value={email} onChange={e => setEmail(e.target.value)} style={inputStyle}
               onFocus={e => e.target.style.border = '1px solid rgba(74,222,128,0.5)'}
               onBlur={e => e.target.style.border = '1px solid rgba(255,255,255,0.1)'}
             />
-            <input type="password" placeholder="Password" required
-              value={password} onChange={e => setPassword(e.target.value)} style={inputStyle}
-              onFocus={e => e.target.style.border = '1px solid rgba(74,222,128,0.5)'}
-              onBlur={e => e.target.style.border = '1px solid rgba(255,255,255,0.1)'}
-            />
-
-            <p onClick={() => navigate('/CheckregisterMail')} style={{
-              textAlign: 'right', fontSize: '0.75rem',
-              color: 'rgba(74,222,128,0.6)', cursor: 'pointer', margin: 0,
-              transition: 'color 0.2s ease'
-            }}
-              onMouseEnter={e => e.target.style.color = '#4ade80'}
-              onMouseLeave={e => e.target.style.color = 'rgba(74,222,128,0.6)'}
-            >
-              Forgot Password?
-            </p>
 
             <button type="submit" disabled={loading} style={{
-              width: '100%', padding: '15px',
+              width: '100%', padding: '15px', marginTop: '4px',
               background: 'linear-gradient(135deg, #4ade80, #22c55e)',
-              border: 'none', borderRadius: '16px',
-              color: 'black', fontSize: '0.85rem', fontWeight: 900,
-              letterSpacing: '2px', textTransform: 'uppercase',
-              cursor: loading ? 'not-allowed' : 'pointer',
-              opacity: loading ? 0.6 : 1,
-              boxShadow: '0 0 30px rgba(74,222,128,0.2)',
-              transition: 'all 0.3s ease', marginTop: '8px'
+              border: 'none', borderRadius: '16px', color: 'black',
+              fontSize: '0.85rem', fontWeight: 900, letterSpacing: '2px',
+              textTransform: 'uppercase', cursor: loading ? 'not-allowed' : 'pointer',
+              opacity: loading ? 0.6 : 1, boxShadow: '0 0 30px rgba(74,222,128,0.2)',
+              transition: 'all 0.3s ease'
             }}
               onMouseEnter={e => { if (!loading) e.currentTarget.style.boxShadow = '0 0 40px rgba(74,222,128,0.4)' }}
               onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 30px rgba(74,222,128,0.2)'}
             >
-              {loading ? 'Signing In...' : 'Sign In →'}
+              {loading ? 'Checking...' : 'Send OTP →'}
             </button>
           </form>
 
           <p style={{ textAlign: 'center', marginTop: '28px', fontSize: '0.82rem', color: 'rgba(255,255,255,0.3)' }}>
-            New to the market?{' '}
-            <span onClick={() => navigate('/register')}
-              style={{ color: '#4ade80', fontWeight: 700, cursor: 'pointer', letterSpacing: '0.5px' }}>
-              Join Now
+            Remember your password?{' '}
+            <span onClick={() => navigate('/login')}
+              style={{ color: '#4ade80', fontWeight: 700, cursor: 'pointer' }}>
+              Sign In
             </span>
           </p>
         </div>
@@ -203,4 +163,4 @@ const Login = () => {
   )
 }
 
-export default Login
+export default CheckRegisterMail
