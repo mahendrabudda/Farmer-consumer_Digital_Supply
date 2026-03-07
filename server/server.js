@@ -16,15 +16,10 @@ const allowedOrigins = ['http://localhost:5173' ,
 
 // 2. Configure CORS with Credentials support
 app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
+  origin: allowedOrigins,
   credentials: true
 }));
+
 // Middleware
 app.use(express.json());
 app.use(cookieParser()); // 👈 Essential for your verify/login routes to read tokens
