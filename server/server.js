@@ -1,6 +1,5 @@
 import 'dotenv/config'
 import express from 'express'
-import cors from 'cors'
 import mongoose from 'mongoose'
 import cookieParser from 'cookie-parser'
 import router from './router/authRoutes.js'
@@ -13,7 +12,7 @@ const allowedOrigins = [
     'https://farmer-consumer-digital-supply.vercel.app'
 ]
 
-// ── Manual CORS headers middleware (handles preflight too) ──
+// ── CORS middleware ──
 app.use((req, res, next) => {
     const origin = req.headers.origin
     if (allowedOrigins.includes(origin)) {
@@ -23,7 +22,6 @@ app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS')
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization,Cookie')
 
-    // ── Respond to preflight immediately ──
     if (req.method === 'OPTIONS') {
         return res.sendStatus(204)
     }
