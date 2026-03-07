@@ -11,7 +11,6 @@ const app = express();
 
 // 1. Define your Frontend Origin
 const allowedOrigins = [
-  "http://localhost:5173",
   "https://farmer-consumer-digital-supply.vercel.app"
 ];
 
