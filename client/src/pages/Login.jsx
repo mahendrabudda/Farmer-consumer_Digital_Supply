@@ -23,7 +23,7 @@ const Login = () => {
     try {
       axios.defaults.withCredentials = true
 
-      const { data } = await axios.post(backendUrl + '/api/auth/login', { email, password })
+      const { data } = await axios.post(backendUrl + '/api/auth/login', { email, password } , { withCredentials: true })
 
       if (!data.success) {
         toast.error(data.message, { position: 'top-center', theme: 'dark' })
