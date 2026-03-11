@@ -10,10 +10,7 @@ import userRouter from './router/userRoute.js'
 const app = express()
 
 app.use(cors({
-    origin: [
-        'http://localhost:5173',
-        'https://farmer-consumer-digital-supply.vercel.app'
-    ],
+    origin: true,
     credentials: true
 }))
 
