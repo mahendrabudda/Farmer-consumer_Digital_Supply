@@ -6,6 +6,7 @@ import cors from 'cors'
 
 import router from './router/authRoutes.js'
 import userRouter from './router/userRoute.js'
+import farmerRouter from './router/farmerRoutes.js'
 
 const app = express()
 
@@ -19,6 +20,7 @@ app.use(cookieParser())
 
 app.use('/api/auth', router)
 app.use('/api/user', userRouter)
+app.use('/api/farmer', farmerRouter)
 
 app.get('/', (req, res) => {
     res.send('MaMholi Backend Running 🌾')
