@@ -56,7 +56,8 @@ const Intro = () => {
       }}>
         <video
           ref={videoRef}
-          autoPlay muted playsInline
+          autoPlay muted playsInline 
+          preload="metadata"
           style={{
             width: '100%', height: '100%',
             objectFit: 'cover', borderRadius: '32px',

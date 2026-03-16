@@ -7,7 +7,6 @@ const FarmerNavbar = () => {
   const location = useLocation();
   const { userData, setIsLoggedin, setUserData } = useContext(AppContent);
   const [isScrolled, setIsScrolled] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [cropDropdown, setCropDropdown] = useState(false);
 
   useEffect(() => {
@@ -16,7 +15,6 @@ const FarmerNavbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Close dropdown when clicking outside
   useEffect(() => {
     const handler = () => setCropDropdown(false);
     if (cropDropdown) document.addEventListener("click", handler);
@@ -48,46 +46,46 @@ const FarmerNavbar = () => {
     <>
       <nav style={{
         width: "100%", position: "fixed", top: 0, left: 0, zIndex: 1000,
-        padding: isScrolled ? "10px 40px" : "18px 40px",
-        background: isScrolled ? "rgba(5,5,5,0.85)" : "transparent",
-        backdropFilter: isScrolled ? "blur(20px)" : "none",
-        borderBottom: isScrolled ? "1px solid rgba(255,255,255,0.07)" : "1px solid transparent",
+        padding: isScrolled ? "10px 40px" : "14px 40px",
+        background: "#ffffff",
+        borderBottom: "1px solid #f0f0f0",
+        boxShadow: isScrolled ? "0 2px 12px rgba(0,0,0,0.06)" : "0 1px 3px rgba(0,0,0,0.04)",
         display: "flex", justifyContent: "space-between", alignItems: "center",
-        transition: "all 0.4s cubic-bezier(0.4,0,0.2,1)",
+        transition: "all 0.3s ease",
         fontFamily: '"Inter", sans-serif',
         boxSizing: "border-box"
       }}>
 
         {/* ── Logo ── */}
-        <div onClick={() => navigate("/")} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
-          <span style={{ fontSize: "1.8rem", filter: "drop-shadow(0 0 10px rgba(74,222,128,0.5))" }}>🌾</span>
-          <span style={{ color: "white", fontSize: "1rem", fontWeight: 900, letterSpacing: "4px", textTransform: "uppercase" }}>
-            Ma<span style={{ color: "#4ade80" }}>Mholi</span>
+        <div onClick={() => navigate("/")} style={{
+          display: "flex", alignItems: "center", gap: "8px", cursor: "pointer"
+        }}>
+          <span style={{ fontSize: "1.5rem" }}>🌾</span>
+          <span style={{ color: "#111111", fontSize: "0.9rem", fontWeight: 900, letterSpacing: "4px", textTransform: "uppercase" }}>
+            Ma<span style={{ color: "#22c55e" }}>Mholi</span>
           </span>
         </div>
 
         {/* ── Nav Links ── */}
         <div style={{
-          display: "flex", alignItems: "center", gap: "4px",
-          background: "rgba(255,255,255,0.03)",
-          padding: "6px 16px", borderRadius: "100px",
-          border: "1px solid rgba(255,255,255,0.06)",
-          backdropFilter: "blur(10px)"
+          display: "flex", alignItems: "center", gap: "2px",
+          background: "#f8fafc", borderRadius: "12px",
+          border: "1px solid #e5e7eb", padding: "4px"
         }}>
           {navItems.map((item) => {
             const isActive = location.pathname === item.path;
             return (
               <button key={item.name} onClick={() => navigate(item.path)} style={{
-                background: isActive ? "rgba(74,222,128,0.1)" : "none",
-                border: isActive ? "1px solid rgba(74,222,128,0.2)" : "1px solid transparent",
-                color: isActive ? "#4ade80" : "rgba(255,255,255,0.55)",
-                fontSize: "0.8rem", fontWeight: 700, cursor: "pointer",
-                padding: "7px 16px", borderRadius: "100px",
-                transition: "all 0.3s ease", letterSpacing: "0.3px",
-                boxShadow: isActive ? "0 0 12px rgba(74,222,128,0.15)" : "none"
+                background: isActive ? "#ffffff" : "transparent",
+                border: "none",
+                color: isActive ? "#111111" : "#6b7280",
+                fontSize: "0.8rem", fontWeight: isActive ? 700 : 500,
+                cursor: "pointer", padding: "7px 14px", borderRadius: "8px",
+                transition: "all 0.2s ease",
+                boxShadow: isActive ? "0 1px 4px rgba(0,0,0,0.08)" : "none"
               }}
-                onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = "white" }}
-                onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = "rgba(255,255,255,0.55)" }}
+                onMouseEnter={e => { if (!isActive) e.currentTarget.style.color = "#111111" }}
+                onMouseLeave={e => { if (!isActive) e.currentTarget.style.color = "#6b7280" }}
               >
                 {item.icon} {item.name}
               </button>
@@ -99,55 +97,53 @@ const FarmerNavbar = () => {
             <button
               onClick={(e) => { e.stopPropagation(); setCropDropdown(p => !p) }}
               style={{
-                background: cropDropdown ? "rgba(74,222,128,0.1)" : "none",
-                border: cropDropdown ? "1px solid rgba(74,222,128,0.2)" : "1px solid transparent",
-                color: cropDropdown ? "#4ade80" : "rgba(255,255,255,0.55)",
-                fontSize: "0.8rem", fontWeight: 700, cursor: "pointer",
-                padding: "7px 16px", borderRadius: "100px",
-                transition: "all 0.3s ease", display: "flex", alignItems: "center", gap: "6px"
+                background: cropDropdown ? "#ffffff" : "transparent",
+                border: "none",
+                color: cropDropdown ? "#22c55e" : "#6b7280",
+                fontSize: "0.8rem", fontWeight: cropDropdown ? 700 : 500,
+                cursor: "pointer", padding: "7px 14px", borderRadius: "8px",
+                transition: "all 0.2s ease",
+                display: "flex", alignItems: "center", gap: "5px",
+                boxShadow: cropDropdown ? "0 1px 4px rgba(0,0,0,0.08)" : "none"
               }}
-              onMouseEnter={e => { if (!cropDropdown) e.currentTarget.style.color = "white" }}
-              onMouseLeave={e => { if (!cropDropdown) e.currentTarget.style.color = "rgba(255,255,255,0.55)" }}
+              onMouseEnter={e => { if (!cropDropdown) e.currentTarget.style.color = "#111111" }}
+              onMouseLeave={e => { if (!cropDropdown) e.currentTarget.style.color = "#6b7280" }}
             >
               🌿 Crop Tools
               <span style={{
                 display: "inline-block",
                 transform: cropDropdown ? "rotate(180deg)" : "rotate(0deg)",
-                transition: "transform 0.3s ease", fontSize: "0.6rem"
+                transition: "transform 0.2s ease", fontSize: "0.55rem"
               }}>▼</span>
             </button>
 
-            {/* Dropdown */}
             {cropDropdown && (
-              <div
-                onClick={e => e.stopPropagation()}
-                style={{
-                  position: "absolute", top: "calc(100% + 12px)", left: "50%",
-                  transform: "translateX(-50%)",
-                  background: "rgba(10,10,10,0.95)",
-                  backdropFilter: "blur(30px)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  borderRadius: "20px", padding: "10px",
-                  minWidth: "240px",
-                  boxShadow: "0 20px 60px rgba(0,0,0,0.6), 0 0 40px rgba(74,222,128,0.05)",
-                  zIndex: 100
-                }}
-              >
+              <div onClick={e => e.stopPropagation()} style={{
+                position: "absolute", top: "calc(100% + 8px)", left: "50%",
+                transform: "translateX(-50%)",
+                background: "#ffffff",
+                border: "1px solid #e5e7eb",
+                borderRadius: "16px", padding: "8px",
+                minWidth: "240px",
+                boxShadow: "0 8px 30px rgba(0,0,0,0.1)",
+                zIndex: 100
+              }}>
                 {cropTools.map((tool) => (
-                  <button key={tool.name} onClick={() => { navigate(tool.path); setCropDropdown(false) }}
+                  <button key={tool.name}
+                    onClick={() => { navigate(tool.path); setCropDropdown(false) }}
                     style={{
                       width: "100%", display: "flex", alignItems: "center", gap: "12px",
-                      padding: "12px 14px", borderRadius: "12px",
+                      padding: "10px 12px", borderRadius: "10px",
                       background: "transparent", border: "none",
-                      cursor: "pointer", transition: "background 0.2s ease", textAlign: "left"
+                      cursor: "pointer", transition: "background 0.15s ease", textAlign: "left"
                     }}
-                    onMouseEnter={e => e.currentTarget.style.background = "rgba(74,222,128,0.07)"}
+                    onMouseEnter={e => e.currentTarget.style.background = "#f0fdf4"}
                     onMouseLeave={e => e.currentTarget.style.background = "transparent"}
                   >
-                    <span style={{ fontSize: "1.3rem" }}>{tool.icon}</span>
+                    <span style={{ fontSize: "1.2rem" }}>{tool.icon}</span>
                     <div>
-                      <div style={{ color: "white", fontSize: "0.82rem", fontWeight: 700 }}>{tool.name}</div>
-                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.7rem", marginTop: "2px" }}>{tool.desc}</div>
+                      <div style={{ color: "#111111", fontSize: "0.82rem", fontWeight: 600 }}>{tool.name}</div>
+                      <div style={{ color: "#9ca3af", fontSize: "0.7rem", marginTop: "1px" }}>{tool.desc}</div>
                     </div>
                   </button>
                 ))}
@@ -156,46 +152,46 @@ const FarmerNavbar = () => {
           </div>
         </div>
 
-        {/* ── Right: Profile + Logout ── */}
-        <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+        {/* ── Right ── */}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
 
-          {/* Notification Bell */}
+          {/* Bell */}
           <button style={{
-            background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: "12px", padding: "10px 12px", cursor: "pointer",
-            color: "rgba(255,255,255,0.6)", fontSize: "1rem", position: "relative",
-            transition: "all 0.3s ease"
+            background: "#f8fafc", border: "1px solid #e5e7eb",
+            borderRadius: "10px", padding: "9px 11px", cursor: "pointer",
+            color: "#6b7280", fontSize: "1rem", position: "relative",
+            transition: "all 0.2s ease"
           }}
-            onMouseEnter={e => { e.currentTarget.style.borderColor = "rgba(74,222,128,0.3)"; e.currentTarget.style.color = "#4ade80" }}
-            onMouseLeave={e => { e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"; e.currentTarget.style.color = "rgba(255,255,255,0.6)" }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = "#22c55e"; e.currentTarget.style.color = "#22c55e" }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = "#e5e7eb"; e.currentTarget.style.color = "#6b7280" }}
           >
             🔔
             <span style={{
-              position: "absolute", top: "6px", right: "6px",
-              width: "7px", height: "7px", background: "#4ade80",
-              borderRadius: "50%", boxShadow: "0 0 6px #4ade80"
+              position: "absolute", top: "5px", right: "5px",
+              width: "7px", height: "7px", background: "#22c55e",
+              borderRadius: "50%", border: "1.5px solid #ffffff"
             }} />
           </button>
 
-          {/* Profile Chip */}
+          {/* Profile */}
           <div style={{
-            display: "flex", alignItems: "center", gap: "10px",
-            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: "14px", padding: "8px 14px"
+            display: "flex", alignItems: "center", gap: "8px",
+            background: "#f8fafc", border: "1px solid #e5e7eb",
+            borderRadius: "10px", padding: "6px 12px"
           }}>
             <div style={{
-              width: "32px", height: "32px", borderRadius: "10px",
+              width: "30px", height: "30px", borderRadius: "8px",
               background: "linear-gradient(135deg, #4ade80, #22c55e)",
               display: "flex", alignItems: "center", justifyContent: "center",
-              fontSize: "0.9rem", fontWeight: 900, color: "black"
+              fontSize: "0.85rem", fontWeight: 900, color: "white"
             }}>
-              {userData?.name ? userData.name[0].toUpperCase() : "F"}
+              {userData?.fullName ? userData.fullName[0].toUpperCase() : "F"}
             </div>
             <div>
-              <div style={{ color: "white", fontSize: "0.82rem", fontWeight: 700 }}>
-                {userData?.name || "Farmer"}
+              <div style={{ color: "#111111", fontSize: "0.8rem", fontWeight: 700 }}>
+                {userData?.fullName || "Farmer"}
               </div>
-              <div style={{ color: "#4ade80", fontSize: "0.62rem", fontWeight: 800, letterSpacing: "1px" }}>
+              <div style={{ color: "#22c55e", fontSize: "0.6rem", fontWeight: 700, letterSpacing: "0.5px" }}>
                 🌾 FARMER
               </div>
             </div>
@@ -203,30 +199,28 @@ const FarmerNavbar = () => {
 
           {/* Logout */}
           <button onClick={handleLogout} style={{
-            background: "rgba(255,255,255,0.04)", color: "rgba(255,255,255,0.6)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            padding: "10px 18px", borderRadius: "12px",
-            fontSize: "0.78rem", fontWeight: 700, cursor: "pointer",
-            letterSpacing: "1px", transition: "all 0.3s ease"
+            background: "#ffffff", color: "#6b7280",
+            border: "1px solid #e5e7eb",
+            padding: "9px 16px", borderRadius: "10px",
+            fontSize: "0.78rem", fontWeight: 600, cursor: "pointer",
+            transition: "all 0.2s ease"
           }}
             onMouseEnter={e => {
-              e.currentTarget.style.background = "rgba(239,68,68,0.08)"
-              e.currentTarget.style.borderColor = "rgba(239,68,68,0.25)"
+              e.currentTarget.style.background = "#fef2f2"
+              e.currentTarget.style.borderColor = "#fca5a5"
               e.currentTarget.style.color = "#ef4444"
             }}
             onMouseLeave={e => {
-              e.currentTarget.style.background = "rgba(255,255,255,0.04)"
-              e.currentTarget.style.borderColor = "rgba(255,255,255,0.08)"
-              e.currentTarget.style.color = "rgba(255,255,255,0.6)"
+              e.currentTarget.style.background = "#ffffff"
+              e.currentTarget.style.borderColor = "#e5e7eb"
+              e.currentTarget.style.color = "#6b7280"
             }}
           >
-            LOGOUT
+            Logout
           </button>
         </div>
       </nav>
-
-      {/* Spacer so content doesn't hide under fixed navbar */}
-      <div style={{ height: "80px" }} />
+      <div style={{ height: "68px" }} />
     </>
   );
 };
